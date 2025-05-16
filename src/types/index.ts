@@ -42,7 +42,7 @@ export interface PortfolioData {
 }
 
 // Theme types
-export type ThemeMode = 'light' | 'dark' | 'purple' | 'blue';
+export type ThemeMode = 'purple' | 'dark';
 
 // Form step types
 export type FormStep = 'basicInfo' | 'skills' | 'projects' | 'contact';

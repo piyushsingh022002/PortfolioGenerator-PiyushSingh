@@ -15,5 +15,6 @@ declare module 'styled-components' {
     cardBackground: string;
     sidebarBackground: string;
     navbarBackground: string;
+    isDarkMode?: boolean;
   }
 }

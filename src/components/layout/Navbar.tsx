@@ -2,9 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import Button from '../common/Button';
-import Select from '../common/Select';
-import { ThemeMode } from '../../types';
-import { FileText } from 'phosphor-react';
+import { FileText, Moon, Sun } from 'phosphor-react';
 
 const NavbarContainer = styled.nav`
   position: sticky;
@@ -76,10 +74,10 @@ const NavbarActions = styled.div`
   }
 `;
 
-const ThemeSelector = styled.div`
+const ThemeToggle = styled.button`
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   background: linear-gradient(145deg, ${({ theme }) => theme.surface + '90'}, ${({ theme }) => theme.surface + '60'});
   padding: 0.5rem 0.75rem;
   border-radius: 0.75rem;
@@ -87,6 +85,8 @@ const ThemeSelector = styled.div`
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   border: 1px solid ${({ theme }) => theme.border + '20'};
   transition: all 0.3s ease;
+  cursor: pointer;
+  color: ${({ theme }) => theme.text};
   
   &:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
@@ -94,13 +94,27 @@ const ThemeSelector = styled.div`
   }
 `;
 
-const ThemeLabel = styled.span`
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text};
+const ToggleSwitch = styled.div`
+  position: relative;
+  width: 40px;
+  height: 20px;
+  background-color: ${({ theme }) => theme.isDarkMode ? theme.primary : theme.surface};
+  border-radius: 10px;
+  padding: 2px;
+  transition: all 0.3s ease;
+  border: 1px solid ${({ theme }) => theme.border};
+  display: flex;
+  align-items: center;
   
-  @media (max-width: 768px) {
-    display: none;
+  &:after {
+    content: '';
+    position: absolute;
+    left: ${({ theme }) => theme.isDarkMode ? '22px' : '2px'};
+    width: 16px;
+    height: 16px;
+    background-color: ${({ theme }) => theme.isDarkMode ? '#fff' : theme.primary};
+    border-radius: 50%;
+    transition: all 0.3s ease;
   }
 `;
 
@@ -127,16 +141,12 @@ const PreviewButton = styled(Button)`
   }
 `;
 
-const StyledSelect = styled(Select)`
-  min-width: 120px;
-  select {
-    background-color: ${({ theme }) => theme.background + '90'};
-    backdrop-filter: blur(8px);
-    border-color: ${({ theme }) => theme.border + '40'};
-    font-weight: 500;
-    padding: 0.6rem 1rem;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-  }
+const ThemeIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.text};
+  font-size: 1rem;
 `;
 
 interface NavbarProps {
@@ -145,18 +155,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onExport, onPreview }) => {
-  const { themeMode, setThemeMode } = useTheme();
-  
-  const themeOptions = [
-    { value: 'light', label: 'Light' },
-    { value: 'dark', label: 'Dark' },
-    { value: 'purple', label: 'Purple' },
-    { value: 'blue', label: 'Blue' },
-  ];
-  
-  const handleThemeChange = (value: string) => {
-    setThemeMode(value as ThemeMode);
-  };
+  const { toggleDarkMode, isDarkMode } = useTheme();
   
   return (
     <NavbarContainer>
@@ -168,14 +167,12 @@ const Navbar: React.FC<NavbarProps> = ({ onExport, onPreview }) => {
       </Logo>
       
       <NavbarActions>
-        <ThemeSelector>
-          <ThemeLabel>Theme:</ThemeLabel>
-          <StyledSelect
-            options={themeOptions}
-            value={themeMode}
-            onChange={handleThemeChange}
-          />
-        </ThemeSelector>
+        <ThemeToggle onClick={toggleDarkMode}>
+          <ThemeIcon>
+            {isDarkMode ? <Sun size={16} weight="bold" /> : <Moon size={16} weight="bold" />}
+          </ThemeIcon>
+          <ToggleSwitch />
+        </ThemeToggle>
         
         <PreviewButton 
           variant="secondary"

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { useTheme } from '../../context/ThemeContext';
 import { motion } from 'framer-motion';
 import { 
   Globe, 
@@ -12,109 +13,120 @@ import {
   ArrowsIn, 
   ArrowsOut 
 } from 'phosphor-react';
+import {
+  StyledHeroSection,
+  StyledHeroTitle,
+  StyledHeroSubtitle,
+  StyledAboutSection,
+  StyledSectionHeading,
+  StyledAboutText,
+  StyledLocationText,
+  StyledSkillsSection,
+  StyledSkillsContainer,
+  StyledSkillItem,
+  StyledSkillName,
+  StyledProjectsSection,
+  StyledProjectsGrid,
+  StyledProjectCard,
+  StyledProjectContent,
+  StyledProjectTitle,
+  StyledProjectDescription,
+  StyledTechContainer,
+  StyledTechTag,
+  StyledContactSection,
+  StyledContactGrid,
+  StyledContactItem,
+  StyledContactIcon,
+  StyledContactLabel,
+  StyledContactValue,
+  StyledFooter
+} from './sections/StyledSections';
 
 // Create simplified placeholder sections for preview
 const HeroSection: React.FC<{ name: string; title: string; avatar?: string }> = ({ name, title, avatar }) => (
-  <div style={{ padding: '2rem', textAlign: 'center', minHeight: '50vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+  <StyledHeroSection>
     {avatar && <img src={avatar} alt={name} style={{ width: '150px', height: '150px', borderRadius: '50%', margin: '0 auto 1rem' }} />}
-    <h1 style={{ marginBottom: '1rem' }}>{name || 'Your Name'}</h1>
-    <h2 style={{ color: '#6366f1' }}>{title || 'Your Title'}</h2>
-  </div>
+    <StyledHeroTitle>{name || 'Your Name'}</StyledHeroTitle>
+    <StyledHeroSubtitle>{title || 'Your Title'}</StyledHeroSubtitle>
+  </StyledHeroSection>
 );
 
 const AboutSection: React.FC<{ bio: string; location?: string }> = ({ bio, location }) => (
-  <div style={{ padding: '2rem', backgroundColor: '#f9fafb', minHeight: '30vh' }}>
-    <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>About Me</h2>
-    <p style={{ maxWidth: '800px', margin: '0 auto', lineHeight: 1.6 }}>{bio || 'Add your bio in the form to see it here.'}</p>
-    {location && <p style={{ textAlign: 'center', marginTop: '1rem' }}>📍 {location}</p>}
-  </div>
+  <StyledAboutSection>
+    <StyledSectionHeading>About Me</StyledSectionHeading>
+    <StyledAboutText>{bio || 'Add your bio in the form to see it here.'}</StyledAboutText>
+    {location && <StyledLocationText>📍 {location}</StyledLocationText>}
+  </StyledAboutSection>
 );
 
 const SkillsSection: React.FC<{ skills: any[] }> = ({ skills }) => (
-  <div style={{ padding: '2rem', minHeight: '30vh' }}>
-    <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Skills & Expertise</h2>
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', maxWidth: '1000px', margin: '0 auto' }}>
+  <StyledSkillsSection>
+    <StyledSectionHeading>Skills & Expertise</StyledSectionHeading>
+    <StyledSkillsContainer>
       {skills.length > 0 ? skills.map((skill) => (
-        <div key={skill.id} style={{ padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '0.5rem', minWidth: '200px' }}>
-          <h3>{skill.name}</h3>
+        <StyledSkillItem key={skill.id}>
+          <StyledSkillName>{skill.name}</StyledSkillName>
           <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem' }}>
             {[1, 2, 3, 4, 5].map((level) => (
               <span key={level} style={{ 
                 width: '1rem', 
                 height: '0.5rem', 
                 borderRadius: '0.25rem', 
-                backgroundColor: skill.level >= level ? '#6366f1' : '#e5e7eb' 
+                backgroundColor: skill.level >= level ? '#a855f7' : '#e5e7eb' 
               }} />
             ))}
           </div>
-        </div>
+        </StyledSkillItem>
       )) : <p>Add your skills in the form to see them here.</p>}
-    </div>
-  </div>
+    </StyledSkillsContainer>
+  </StyledSkillsSection>
 );
 
 const ProjectsSection: React.FC<{ projects: any[] }> = ({ projects }) => (
-  <div style={{ padding: '2rem', backgroundColor: '#f9fafb', minHeight: '30vh' }}>
-    <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>My Projects</h2>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+  <StyledProjectsSection>
+    <StyledSectionHeading>My Projects</StyledSectionHeading>
+    <StyledProjectsGrid>
       {projects.length > 0 ? projects.map((project) => (
-        <div key={project.id} style={{ backgroundColor: 'white', borderRadius: '0.5rem', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
+        <StyledProjectCard key={project.id}>
           {project.imageUrl && <div style={{ height: '200px', backgroundImage: `url(${project.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />}
-          <div style={{ padding: '1.5rem' }}>
-            <h3 style={{ marginBottom: '0.5rem' }}>{project.title}</h3>
-            <p style={{ marginBottom: '1rem' }}>{project.description}</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+          <StyledProjectContent>
+            <StyledProjectTitle>{project.title}</StyledProjectTitle>
+            <StyledProjectDescription>{project.description}</StyledProjectDescription>
+            <StyledTechContainer>
               {project.technologies.map((tech: string) => (
-                <span key={tech} style={{ 
-                  display: 'inline-block', 
-                  padding: '0.25rem 0.75rem', 
-                  backgroundColor: 'rgba(99, 102, 241, 0.1)', 
-                  color: '#6366f1', 
-                  borderRadius: '1rem', 
-                  fontSize: '0.75rem' 
-                }}>{tech}</span>
+                <StyledTechTag key={tech}>{tech}</StyledTechTag>
               ))}
-            </div>
-          </div>
-        </div>
+            </StyledTechContainer>
+          </StyledProjectContent>
+        </StyledProjectCard>
       )) : <p style={{ textAlign: 'center' }}>Add your projects in the form to see them here.</p>}
-    </div>
-  </div>
+    </StyledProjectsGrid>
+  </StyledProjectsSection>
 );
 
 const ContactSection: React.FC<{ contact: any }> = ({ contact }) => (
-  <div style={{ padding: '2rem', minHeight: '30vh' }}>
-    <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Get In Touch</h2>
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', justifyContent: 'center', maxWidth: '800px', margin: '0 auto' }}>
+  <StyledContactSection>
+    <StyledSectionHeading>Get In Touch</StyledSectionHeading>
+    <StyledContactGrid>
       {Object.keys(contact).some(key => contact[key]) ? (
         Object.entries(contact).map(([key, value]) => {
           if (!value) return null;
           return (
-            <a key={key} href={key === 'email' ? `mailto:${value}` : String(value)} style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              padding: '1.5rem', 
-              backgroundColor: '#f9fafb', 
-              borderRadius: '0.5rem', 
-              minWidth: '200px',
-              textDecoration: 'none',
-              color: 'inherit'
-            }}>
-              <span style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+            <StyledContactItem key={key} href={key === 'email' ? `mailto:${value}` : String(value)}>
+              <StyledContactIcon>
                 {key === 'email' ? '✉️' : key === 'phone' ? '📱' : key === 'linkedin' ? '🔗' : key === 'github' ? '💻' : key === 'twitter' ? '🐦' : '🌐'}
-              </span>
-              <span style={{ fontWeight: 500 }}>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
-              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>{key === 'email' || key === 'phone' ? String(value) : 'View'}</span>
-            </a>
+              </StyledContactIcon>
+              <StyledContactLabel>{key.charAt(0).toUpperCase() + key.slice(1)}</StyledContactLabel>
+              <StyledContactValue>{key === 'email' || key === 'phone' ? String(value) : 'View'}</StyledContactValue>
+            </StyledContactItem>
           );
         }).filter(Boolean)
       ) : <p>Add your contact information in the form to see it here.</p>}
-    </div>
-    <div style={{ textAlign: 'center', marginTop: '3rem', color: '#6b7280', fontSize: '0.875rem' }}>
+    </StyledContactGrid>
+    <StyledFooter>
       © {new Date().getFullYear()} • Created with Portfolio Generator
-    </div>
-  </div>
+    </StyledFooter>
+  </StyledContactSection>
 );
 
 const PreviewWrapper = styled.div`
@@ -237,6 +249,7 @@ const SectionLabel = styled.div`
 
 const PreviewContainer: React.FC = () => {
   const { portfolioData, currentStep } = usePortfolio();
+  const { theme } = useTheme();
   const [showFullPreview, setShowFullPreview] = useState(false);
   
   const toggleFullPreview = () => {

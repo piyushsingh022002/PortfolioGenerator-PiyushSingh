@@ -1,10 +1,12 @@
 import React, { useState, useCallback, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { PortfolioProvider } from './context/PortfolioContext';
 import GlobalStyles from './styles/GlobalStyles';
 import Layout from './components/layout/Layout';
 import FormContainer from './components/form/FormContainer';
 import PreviewContainer from './components/preview/PreviewContainer';
+import ExportPage from './components/export/ExportPage';
 import Button from './components/common/Button';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -164,7 +166,8 @@ const Overlay = styled(motion.div)`
 const App: React.FC = () => {
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [exportTheme, setExportTheme] = useState<'light' | 'dark'>('light');
+  const [exportTheme, setExportTheme] = useState<'purple' | 'dark'>('purple');
+  const [navigateToExport, setNavigateToExport] = useState(false);
   const htmlRef = useRef<HTMLDivElement>(null);
   
   const handleExport = useCallback(() => {
@@ -184,143 +187,106 @@ const App: React.FC = () => {
   }, []);
   
   const handleExportConfirm = useCallback(() => {
-    // Implementation for exporting the portfolio
-    // This would generate HTML/CSS files based on the portfolio data and selected theme
-    
-    // Create a downloadable HTML file
-    if (htmlRef.current) {
-      const portfolioHTML = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>My Portfolio</title>
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-          <style>
-            :root {
-              --primary: ${exportTheme === 'light' ? '#6366f1' : '#818cf8'};
-              --background: ${exportTheme === 'light' ? '#ffffff' : '#111827'};
-              --text: ${exportTheme === 'light' ? '#1f2937' : '#f9fafb'};
-              /* Add more CSS variables based on the theme */
-            }
-            /* Add the rest of your CSS here */
-            body {
-              font-family: 'Inter', sans-serif;
-              background-color: var(--background);
-              color: var(--text);
-              margin: 0;
-              padding: 0;
-            }
-            /* You would include all the necessary CSS for the portfolio here */
-          </style>
-        </head>
-        <body>
-          ${htmlRef.current.innerHTML}
-        </body>
-        </html>
-      `;
-      
-      // Create a download link
-      const element = document.createElement('a');
-      const file = new Blob([portfolioHTML], {type: 'text/html'});
-      element.href = URL.createObjectURL(file);
-      element.download = 'my-portfolio.html';
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-      
-      setExportModalOpen(false);
-    }
+    // Navigate to the export page with the selected theme
+    setExportModalOpen(false);
+    setNavigateToExport(true);
   }, [exportTheme]);
   
   return (
     <ThemeProvider>
       <PortfolioProvider>
         <GlobalStyles />
-        <AppContainer>
-          <Layout onExport={handleExport} onPreview={handlePreview} />
-          
-          {/* Full screen preview */}
-          <AnimatePresence>
-            {previewOpen && (
-              <>
-                <Overlay 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={handleClosePreview}
-                />
-                <FullScreenPreview
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <CloseButton onClick={handleClosePreview}>✕</CloseButton>
-                  <div ref={htmlRef}>
-                    <PreviewContainer />
-                  </div>
-                </FullScreenPreview>
-              </>
-            )}
-          </AnimatePresence>
-          
-          {/* Export modal */}
-          <AnimatePresence>
-            {exportModalOpen && (
-              <>
-                <Overlay 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={handleCloseExportModal}
-                />
-                <ExportModal
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <ModalTitle>Export Portfolio</ModalTitle>
-                  <ModalContent>
-                    <p>Choose the theme for your exported portfolio:</p>
-                    
-                    <ThemeOption 
-                      isSelected={exportTheme === 'light'}
-                      onClick={() => setExportTheme('light')}
-                    >
-                      <ThemeColor color="#ffffff" />
-                      <span>Light Theme</span>
-                    </ThemeOption>
-                    
-                    <ThemeOption 
-                      isSelected={exportTheme === 'dark'}
-                      onClick={() => setExportTheme('dark')}
-                    >
-                      <ThemeColor color="#111827" />
-                      <span>Dark Theme</span>
-                    </ThemeOption>
-                  </ModalContent>
-                  <ModalActions>
-                    <Button 
-                      variant="secondary" 
-                      onClick={handleCloseExportModal}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      variant="primary" 
-                      onClick={handleExportConfirm}
-                    >
-                      Export
-                    </Button>
-                  </ModalActions>
-                </ExportModal>
-              </>
-            )}
-          </AnimatePresence>
-        </AppContainer>
+        <Router>
+          {navigateToExport && <Navigate to="/export" state={{ exportTheme }} replace />}
+          <Routes>
+            <Route path="/" element={
+              <AppContainer>
+                <Layout onExport={handleExport} onPreview={handlePreview} />
+                
+                {/* Full screen preview */}
+                <AnimatePresence>
+                  {previewOpen && (
+                    <>
+                      <Overlay 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={handleClosePreview}
+                      />
+                      <FullScreenPreview
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <CloseButton onClick={handleClosePreview}>✕</CloseButton>
+                        <div ref={htmlRef}>
+                          <PreviewContainer />
+                        </div>
+                      </FullScreenPreview>
+                    </>
+                  )}
+                </AnimatePresence>
+                
+                {/* Export modal */}
+                <AnimatePresence>
+                  {exportModalOpen && (
+                    <>
+                      <Overlay 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={handleCloseExportModal}
+                      />
+                      <ExportModal
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <ModalTitle>Export Portfolio</ModalTitle>
+                        <ModalContent>
+                          <p>Choose the theme for your exported portfolio:</p>
+                          
+                          <ThemeOption 
+                            isSelected={exportTheme === 'purple'}
+                            onClick={() => setExportTheme('purple')}
+                          >
+                            <ThemeColor color="#ffffff" />
+                            <span>Light Theme (Purple)</span>
+                          </ThemeOption>
+                          
+                          <ThemeOption 
+                            isSelected={exportTheme === 'dark'}
+                            onClick={() => setExportTheme('dark')}
+                          >
+                            <ThemeColor color="#111827" />
+                            <span>Dark Theme</span>
+                          </ThemeOption>
+                        </ModalContent>
+                        <ModalActions>
+                          <Button 
+                            variant="secondary" 
+                            onClick={handleCloseExportModal}
+                          >
+                            Cancel
+                          </Button>
+                          <Button 
+                            variant="primary" 
+                            onClick={handleExportConfirm}
+                          >
+                            Continue
+                          </Button>
+                        </ModalActions>
+                      </ExportModal>
+                    </>
+                  )}
+                </AnimatePresence>
+              </AppContainer>
+            } />
+            <Route path="/export" element={<ExportPage />} />
+          </Routes>
+        </Router>
       </PortfolioProvider>
     </ThemeProvider>
   );
